@@ -1,11 +1,10 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "./",
     "lib": ["dom", "es6"],
     "outDir": "./dist",
     "sourceMap": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "target": "esnext",
     "moduleResolution": "node",
     "removeComments": true,
@@ -16,10 +15,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["backend/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
-  }
 }

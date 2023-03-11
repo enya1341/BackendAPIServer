@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
-import express, { Application, Request, Response } from 'express';
+import express from 'express';
 import mysql from 'mysql2';
-const app: Application = express();
+const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const port = 3334;
@@ -19,11 +19,11 @@ const connection = mysql.createConnection({
   database: 'react_todo_app',
 });
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (req: express.Request, res: express.Response) => {
   res.send(req);
 });
 
-app.get('/api/get', (req: Request, res: Response) => {
+app.get('/api/get', (req: express.Request, res: express.Response) => {
   //getは何故かわからないがhttp://localhost:3000/api/getで叩けてしまっている(port=3001なのに何故…？)
   connection.query('SELECT * FROM todos', function (err, results) {
     if (err) {
@@ -35,7 +35,7 @@ app.get('/api/get', (req: Request, res: Response) => {
   });
 });
 
-app.put('/api/put', (req: Request<TodoObj>, res: Response) => {
+app.put('/api/put', (req: express.Request<TodoObj>, res: express.Response) => {
   connection.query(
     // Proxy error: Could not proxy request /api/put from localhost:3000 to http://localhost:3001.
     // こちらは叩いた時にproxyエラーが発生している。getでproxyエラーが発生していないのはputとgetの仕様の違いかな
