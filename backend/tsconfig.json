@@ -6,6 +6,7 @@
     "sourceMap": true,
     "module": "CommonJS",
     "target": "esnext",
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "removeComments": true,
     "strictNullChecks": true,
