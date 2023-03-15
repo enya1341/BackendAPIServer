@@ -15,7 +15,7 @@ export interface TodoObj {
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: '@Ryuna6337',
   database: 'react_todo_app',
 });
 
@@ -41,14 +41,15 @@ app.put('/api/put', (req: express.Request<TodoObj>, res: express.Response) => {
     // こちらは叩いた時にproxyエラーが発生している。getでproxyエラーが発生していないのはputとgetの仕様の違いかな
     // 恐らくこれが叩けてないのはフロントが原因
     // また動作確認を取れてないのでこれ自体が正常に動くか不明
-    `INSERT INTO todos (id, name, completed) VALUES (${req.params.id}, ${req.params.name},${req.params.completed})`,
+    `INSERT INTO todos (id, name, completed) VALUES ('${req.body.id}', '${req.body.name}','0')`,
     function (err, results) {
       if (err) {
         console.log(req);
         throw err;
       }
       res.json({ data: results });
-      console.log(req);
+      console.log('error');
+      console.log(req.body);
     },
   );
 });

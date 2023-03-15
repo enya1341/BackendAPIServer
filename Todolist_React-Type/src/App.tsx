@@ -1,7 +1,7 @@
 import "./index.css";
 import { TodoList } from "./TodoList";
 import { APIBody } from "./APIBody";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -63,95 +63,97 @@ export const App: React.FC = () => {
       setUseTodos((prevTodos: TodoObj[]) => {
         return [...prevTodos, { id: todoId, name: todoName, completed: false }];
       });
-      const options: AxiosRequestConfig = {
-        url: `/api/put`,
-        method: "PUT",
+      const requestData: TodoObj = {
+        id: todoId,
+        name: todoName,
+        completed: false
       };
-      axios(options)
+      axios
+        .put("/api/put", requestData)
         .then((response: AxiosResponse<TodoObjAPI>) => {
           const { data, status } = response;
           if (status !== 200) {
-            console.log("errorです");
+            console.log("data", data);
             return;
           }
-          console.log(data);
+          console.log("data", data);
         })
         .catch(() => "test");
     }
-  };
-
-  const toggleTodo: (id: string) => void = (id: string) => {
-    const newTodos = [...useTodos];
-    const todo = newTodos.find((todo) => todo.id === id);
-    if (todo !== undefined) {
-      todo.completed = !todo.completed;
-    }
-    setUseTodos(newTodos);
-  };
-
-  const handleClear: React.MouseEventHandler<HTMLButtonElement> = () => {
-    const newTodos = useTodos.filter((todo) => !todo.completed);
-    setUseTodos(newTodos);
-  };
-  const [usePublicAPIData, setUsePublicAPIData] = useState<PublicAPIs>({
-    count: 0,
-    entries: [],
-  });
-  const baseURL = "https://api.publicapis.org/entries";
-  const [useSwitchPageBody, setUseSwitchPageBody] =
-    React.useState<boolean>(false);
-  useEffect(() => {
-    const getUser: () => Promise<void> = async () => {
-      await axios
-        .get(baseURL)
-        .then((response: AxiosResponse<PublicAPIs>) => {
-          const { data, status } = response;
-          if (status !== 200) {
-            return;
-          }
-          setUsePublicAPIData(data);
-        })
-        .catch(() => "test");
     };
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getUser();
-  }, []);
 
-  const handleShowAPI: React.MouseEventHandler<HTMLButtonElement> = () => {
-    setUseSwitchPageBody(!useSwitchPageBody);
-  };
-  if (!useSwitchPageBody) {
-    return (
-      <div>
-        <TodoList todos={useTodos} toggleTodo={toggleTodo} />
-        <input type="text" ref={useTodoNameRef} />
-        <button onClick={handleAddTodo}>タスクを追加</button>
-        <button onClick={handleClear}>選択したタスクを削除</button>
+    const toggleTodo: (id: string) => void = (id: string) => {
+      const newTodos = [...useTodos];
+      const todo = newTodos.find((todo) => todo.id === id);
+      if (todo !== undefined) {
+        todo.completed = !todo.completed;
+      }
+      setUseTodos(newTodos);
+    };
+
+    const handleClear: React.MouseEventHandler<HTMLButtonElement> = () => {
+      const newTodos = useTodos.filter((todo) => !todo.completed);
+      setUseTodos(newTodos);
+    };
+    const [usePublicAPIData, setUsePublicAPIData] = useState<PublicAPIs>({
+      count: 0,
+      entries: [],
+    });
+    const baseURL = "https://api.publicapis.org/entries";
+    const [useSwitchPageBody, setUseSwitchPageBody] =
+      React.useState<boolean>(false);
+    useEffect(() => {
+      const getUser: () => Promise<void> = async () => {
+        await axios
+          .get(baseURL)
+          .then((response: AxiosResponse<PublicAPIs>) => {
+            const { data, status } = response;
+            if (status !== 200) {
+              return;
+            }
+            setUsePublicAPIData(data);
+          })
+          .catch(() => "test");
+      };
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getUser();
+    }, []);
+
+    const handleShowAPI: React.MouseEventHandler<HTMLButtonElement> = () => {
+      setUseSwitchPageBody(!useSwitchPageBody);
+    };
+    if (!useSwitchPageBody) {
+      return (
         <div>
-          残りのタスク:{useTodos.filter((todo) => !todo.completed).length}
+          <TodoList todos={useTodos} toggleTodo={toggleTodo} />
+          <input type="text" ref={useTodoNameRef} />
+          <button onClick={handleAddTodo}>タスクを追加</button>
+          <button onClick={handleClear}>選択したタスクを削除</button>
+          <div>
+            残りのタスク:{useTodos.filter((todo) => !todo.completed).length}
+          </div>
+          <div>APITable</div>
+          <button onClick={handleShowAPI}>APIを表示</button>
         </div>
-        <div>APITable</div>
-        <button onClick={handleShowAPI}>APIを表示</button>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <div>APITable</div>
-        <button onClick={handleShowAPI}>タスクを表示</button>
-        <table>
-          <thead>
-            <tr>
-              <th>番号</th>
-              <th>タイトル</th>
-              <th>カテゴリー</th>
-              <th>概要</th>
-              <th>リンク</th>
-            </tr>
-          </thead>
-          <APIBody data={usePublicAPIData}></APIBody>
-        </table>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div>
+          <div>APITable</div>
+          <button onClick={handleShowAPI}>タスクを表示</button>
+          <table>
+            <thead>
+              <tr>
+                <th>番号</th>
+                <th>タイトル</th>
+                <th>カテゴリー</th>
+                <th>概要</th>
+                <th>リンク</th>
+              </tr>
+            </thead>
+            <APIBody data={usePublicAPIData}></APIBody>
+          </table>
+        </div>
+      );
+    }
   }
-};
